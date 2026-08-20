@@ -62,11 +62,19 @@
     }
 
     .tile {
-        background: linear-gradient(135deg, #FFD700, #B8860B);
-        border: 1px solid #4a3500;
-        cursor: pointer;
-        transition: opacity 0.5s, transform 0.5s;
-    }
+    background: linear-gradient(135deg, #FFD700, #B8860B);
+    border: 1px solid #4a3500;
+    cursor: pointer;
+    transition: opacity 0.5s, transform 0.5s;
+    /* เติมโค้ด 5 บรรทัดล่างนี้เข้าไป */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #2a0800;
+}
+
 
     .tile.hidden {
         opacity: 0;
@@ -213,7 +221,7 @@
     },
     // (ข้อมูลข้ออื่นปล่อยไว้เหมือนเดิม แต่กูแก้จุดที่เคยพังให้แล้ว)
     {
-        img: '2.JPG', 
+        img: '2.jpg', 
         q: "2. วงมโหรีเครื่องใหญ่ แตกต่างจากวงมโหรีเครื่องคู่อย่างไร",
         video: null,
         choices: [
@@ -225,7 +233,7 @@
         ans: 1 // Index ของข้อ B
     },
     {
-        img: '3.JPG', 
+        img: '3.jpg', 
         q: "3. ขลุ่ยหลิบ ขลุ่ยเพียงออ และขลุ่ยอู้ ต่างกันอย่างไร",
         video: null,
         choices: [
@@ -237,7 +245,7 @@
         ans: 3 // Index ของข้อ D
     },
     {
-        img: '4.JPG', 
+        img: '4.png', 
         q: "4. จากคลิปวิดิโอ เป็นการเล่นเพลงชนิดใด และมีอัตราจังหวะกี่ชั้น",
         video: 'URL_วิดีโอ_1.mp4', // (มึงต้องแก้ลิงก์นี้เป็นไฟล์วิดีโอของมึง)
         choices: [
@@ -283,7 +291,9 @@
             for (let i = 0; i < 12; i++) {
                 let tile = document.createElement('div');
                 tile.className = 'tile';
+                tile.innerText = i + 1;
                 tile.onclick = function() {
+
                     this.classList.add('hidden');
                     startMusic();
                 };
