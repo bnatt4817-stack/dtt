@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมวงมโหรีเครื่องใหญ่</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+    
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Sarabun', sans-serif;
+        background: radial-gradient(circle, #2a0800 0%, #000000 100%);
+        color: #FFD700;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        text-align: center;
+        padding: 50px;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .active { display: flex; }
+
+    h1, h2 { 
+        text-shadow: 2px 2px 5px #ffaa00;
+        font-size: 3rem; /* ขยายคำถามให้ใหญ่มาก */
+        margin-bottom: 30px;
+    }
+
+    /* Image Reveal Section */
+    .image-reveal-container {
+        position: relative;
+        width: 100%;
+        max-width: 1000px; /* ขยายกรอบรูปเปิดป้ายให้ใหญ่ขึ้น */
+        aspect-ratio: 16/9; /* ปรับสัดส่วนรูป */
+        margin: 0 auto;
+        border: 2px solid #FFD700;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .grid {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+    }
+
+    .tile {
+        background: linear-gradient(135deg, #FFD700, #B8860B);
+        border: 1px solid #4a3500;
+        cursor: pointer;
+        transition: opacity 0.5s, transform 0.5s;
+    }
+
+    .tile.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.8);
+    }
+
+    .btn {
+        background: linear-gradient(135deg, #B8860B, #FFD700);
+        color: #000;
+        border: none;
+        padding: 20px 40px; /* ขยายปุ่ม */
+        font-size: 1.5rem; /* ขยายตัวอักษรปุ่ม */
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 30px;
+        box-shadow: 0 0 10px #FFD700;
+    }
+    .btn:hover { box-shadow: 0 0 20px #FFD700; }
+
+    /* Quiz Section */
+    .choices {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 1200px; /* กำหนดความกว้างช้อยส์ให้เต็มตา */
+    }
+
+    .choice {
+        background: #1a1a1a;
+        border: 2px solid #FFD700;
+        color: #fff;
+        padding: 30px; /* เพิ่มความหนาช้อยส์ */
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 2.2rem; /* ขยายฟอนต์ช้อยส์ให้ใหญ่มาก */
+        transition: background 0.3s, transform 0.3s;
+        text-align: left; /* จัดช้อยส์ให้อยู่ซ้าย */
+    }
+
+    .choice:hover { background: #332200; }
+
+    .choice.falling {
+        animation: fallDown 1s forwards;
+        pointer-events: none;
+    }
+
+    @keyframes fallDown {
+        0% { transform: translateY(0) rotate(0); opacity: 1; }
+        100% { transform: translateY(200px) rotate(15deg); opacity: 0; }
+    }
+
+    /* Overlays for Correct/Wrong (ต้องปิด display ไว้!) */
+    .overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        display: none; /* ตัวการ! ต้องเป็น display: none; ถึงจะซ่อน */
+        justify-content: center;
+        align-items: center;
+        font-size: 8rem; /* ขยายคำเฉลยให้ใหญ่มาก */
+        font-weight: bold;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 10;
+        background-color: rgba(0,0,0,0.8); /* เพิ่มพื้นหลังให้เฉลยชัดขึ้น */
+    }
+
+    .wrong-text { color: #ff3333; text-shadow: 0 0 20px #ff0000; }
+    .correct-text { color: #FFD700; text-shadow: 0 0 30px #ffffff; }
+
+    .show-wrong { display: flex; animation: flashText 1.5s forwards; } /* เปลี่ยน display เป็น flex เมื่อจะโชว์ */
+    .show-correct { display: flex; animation: grandCorrect 3s forwards; } /* เปลี่ยน display เป็น flex เมื่อจะโชว์ */
+
+    @keyframes flashText {
+        0% { opacity: 0; transform: scale(0.5); }
+        20% { opacity: 1; transform: scale(1.2); }
+        80% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(1.5); }
+    }
+
+    @keyframes grandCorrect {
+        0% { opacity: 0; transform: scale(0.1) rotate(-10deg); }
+        30% { opacity: 1; transform: scale(1.2) rotate(5deg); }
+        70% { opacity: 1; transform: scale(1) rotate(0); text-shadow: 0 0 50px #FFD700, 0 0 100px #fff; }
+        100% { opacity: 0; transform: scale(2); }
+    }
+
+    video { max-width: 100%; height: 400px; border: 2px solid #FFD700; margin-bottom: 20px; }
+
+</style>
+</head>
+<body>
+
+    <audio id="bg-music" loop controls>
+        <!-- ใส่ลิงก์เพลงบรรเลงไทยตรงนี้ -->
+        <source src="bgm.mp4" type="audio/mp4">
+    </audio>
+
+    <!-- Screen 1: Image Reveal -->
+    <div id="screen-reveal" class="container active">
+        <h1 id="reveal-title">เปิดภาพปริศนา</h1>
+        <div class="image-reveal-container" id="image-container">
+            <div class="grid" id="tile-grid"></div>
+        </div>
+        <div>
+            <button class="btn" onclick="goToQuestion()">ถัดไป (ไปตอบคำถาม)</button>
+        </div>
+    </div>
+
+    <!-- Screen 2: Quiz -->
+    <div id="screen-quiz" class="container">
+        <h2 id="question-text"></h2>
+        <div id="video-container" style="display:none;">
+            <video id="q-video" controls></video>
+        </div>
+        <div class="choices" id="choices-container"></div>
+        <div id="overlay-wrong" class="overlay wrong-text">WRONG!</div>
+        <div id="overlay-correct" class="overlay correct-text">CORRECT!</div>
+    </div>
+
+    <!-- Screen 3: End -->
+    <div id="screen-end" class="container" style="justify-content: center;">
+        <h1 style="font-size: 4rem; color: #FFD700; text-shadow: 0 0 30px #fff;">จบแล้วจ้า</h1>
+        <p>ขอบคุณที่ร่วมสนุกกับเกมวงมโหรีเครื่องใหญ่</p>
+    </div>
+
+    <script>
+        const questions = [
+    {
+        // *** แก้ตรงนี้: เปลี่ยน 'URL_ภาพที่_1.jpg' เป็นชื่อไฟล์จริงของมึง เช่น '1.jpg' ***
+        img: '1.jpg', 
+        q: "1. หน้าที่หลักของซอสามสายและซอด้วงต่างกันอย่างไร",
+        video: null,
+        choices: [
+            "A. ซอสามสายคู่ระนาดเอกและจะเข้ ซอด้วงมีหน้าที่คลอเสียงร้อง",
+            "B. ซอสามสายนำทำนองวง ซอด้วงเล่นสอดคล้องกับระนาดเอก",
+            "C. ซอสามสายขึ้นเพลงและคลอเสียงร้อง ซอด้วงเป็นผู้นำทำนองวง",
+            "D. ซอสามสายควบคุมจังหวะ ซอด้วงเป็นผู้บรรเลงขึ้นเพลง"
+        ],
+        ans: 2 // Index ของข้อ C
+    },
+    // (ข้อมูลข้ออื่นปล่อยไว้เหมือนเดิม แต่กูแก้จุดที่เคยพังให้แล้ว)
+    {
+        img: '2.JPG', 
+        q: "2. วงมโหรีเครื่องใหญ่ แตกต่างจากวงมโหรีเครื่องคู่อย่างไร",
+        video: null,
+        choices: [
+            "A. เป็นวงที่เกิดจากการนำเครื่องดนตรีของวงปี่พาทย์และวงเครื่องสายมารวมกัน",
+            "B. มีการเพิ่มระนาดเอกเหล็กและระนาดทุ้มเหล็กเข้ามา",
+            "C. มีการเพิ่มฆ้องวงเล็กและขลุ่ยหลิบเข้ามา",
+            "D. มีการใช้ซอสามสายเป็นเครื่องดนตรีหลัก"
+        ],
+        ans: 1 // Index ของข้อ B
+    },
+    {
+        img: '3.JPG', 
+        q: "3. ขลุ่ยหลิบ ขลุ่ยเพียงออ และขลุ่ยอู้ ต่างกันอย่างไร",
+        video: null,
+        choices: [
+            "A. ต่างที่ขนาด โดยขลุ่ยเพียงออใหญ่ที่สุด และขลุ่ยหลิบเล็กที่สุด",
+            "B. ต่างที่ขนาด โดยขลุ่ยอู้ใหญ่ที่สุด และขลุ่ยเพียงออเล็กที่สุด",
+            "C. ต่างที่ระดับเสียง โดยขลุ่ยหลิบเสียงต่ำสุด และขลุ่ยอู้เสียงสูงสุด",
+            "D. ต่างที่ระดับเสียง โดยขลุ่ยหลิบเสียงสูงสุด และขลุ่ยอู้เสียงต่ำสุด"
+        ],
+        ans: 3 // Index ของข้อ D
+    },
+    {
+        img: '4.JPG', 
+        q: "4. จากคลิปวิดิโอ เป็นการเล่นเพลงชนิดใด และมีอัตราจังหวะกี่ชั้น",
+        video: 'URL_วิดีโอ_1.mp4', // (มึงต้องแก้ลิงก์นี้เป็นไฟล์วิดีโอของมึง)
+        choices: [
+            "A. เพลงโหมโรง อัตราจังหวะชั้นเดียว",
+            "B. เพลงเถา อัตราจังหวะสองชั้น",
+            "C. เพลงโหมโรง อัตราจังหวะสองชั้น",
+            "D. เพลงเถา อัตราจังหวะสามชั้น"
+        ],
+        ans: 3 // Index ของข้อ D
+    },
+    {
+        img: '5.JPG', 
+        q: "5. จากคลิปวิดิโอ ผู้ขับร้องคือใคร",
+        video: 'URL_วิดีโอ_2.mp4', // (มึงต้องแก้ลิงก์นี้เป็นไฟล์วิดีโอของมึง)
+        choices: [
+            "A. อาจารย์สุรางค์ ดุริยพันธุ์",
+            "B. อาจารย์พีรศิษย์ บัวทั่ง",
+            "C. อาจารย์นิรันดร์ แจ่มอรุณ",
+            "D. พันเอก (พิเศษ) ธนณัฐ ยังเฟื่องมนต์"
+        ],
+        ans: 0 // Index ของข้อ A
+    }
+];
+
+        let currentRound = 0;
+        let bgMusicPlayed = false;
+
+        function startMusic() {
+            if (!bgMusicPlayed) {
+                document.getElementById('bg-music').play().catch(e=>{});
+                bgMusicPlayed = true;
+            }
+        }
+
+        function initReveal() {
+            startMusic();
+            const qData = questions[currentRound];
+            document.getElementById('image-container').style.backgroundImage = `url('${qData.img}')`;
+            document.getElementById('reveal-title').innerText = `เปิดภาพปริศนา ภาพที่ ${currentRound + 1}`;
+            
+            const grid = document.getElementById('tile-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                let tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.onclick = function() {
+                    this.classList.add('hidden');
+                    startMusic();
+                };
+                grid.appendChild(tile);
+            }
+            switchScreen('screen-reveal');
+        }
+
+        function goToQuestion() {
+            const qData = questions[currentRound];
+            document.getElementById('question-text').innerText = qData.q;
+            
+            const vidContainer = document.getElementById('video-container');
+            const vid = document.getElementById('q-video');
+            if (qData.video) {
+                vid.src = qData.video;
+                vidContainer.style.display = 'block';
+            } else {
+                vid.src = '';
+                vidContainer.style.display = 'none';
+            }
+
+            const choicesContainer = document.getElementById('choices-container');
+            choicesContainer.innerHTML = '';
+            qData.choices.forEach((choiceText, index) => {
+                let btn = document.createElement('div');
+                btn.className = 'choice';
+                btn.innerText = choiceText;
+                btn.onclick = () => checkAnswer(btn, index, qData.ans);
+                choicesContainer.appendChild(btn);
+            });
+
+            switchScreen('screen-quiz');
+        }
+
+        function checkAnswer(element, selected, correct) {
+            if (element.classList.contains('falling')) return;
+
+            if (selected === correct) {
+                // ถูกต้อง
+                let overlay = document.getElementById('overlay-correct');
+                overlay.classList.remove('show-correct');
+                void overlay.offsetWidth; // trigger reflow
+                overlay.classList.add('show-correct');
+                
+                if (document.getElementById('q-video').src) {
+                    document.getElementById('q-video').pause();
+                }
+
+                setTimeout(() => {
+                    overlay.classList.remove('show-correct');
+                    currentRound++;
+                    if (currentRound < questions.length) {
+                        initReveal();
+                    } else {
+                        switchScreen('screen-end');
+                    }
+                }, 3000);
+            } else {
+                // ผิด
+                element.classList.add('falling');
+                let overlay = document.getElementById('overlay-wrong');
+                overlay.classList.remove('show-wrong');
+                void overlay.offsetWidth; 
+                overlay.classList.add('show-wrong');
+                setTimeout(() => overlay.classList.remove('show-wrong'), 1500);
+            }
+        }
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // เริ่มเกม
+        window.onload = initReveal;
+    </script>
+</body>
+</html>
