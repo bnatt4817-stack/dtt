@@ -175,6 +175,10 @@
         <!-- ใส่ลิงก์เพลงบรรเลงไทยตรงนี้ -->
         <source src="bgm.mp4" type="audio/mp4">
     </audio>
+    <audio id="sfx-reveal" src="reveal.mp3"></audio>
+<audio id="sfx-click" src="click.mp3"></audio>
+<audio id="sfx-correct" src="correct.mp3"></audio>
+<audio id="sfx-wrong" src="wrong.mp3"></audio>
 
     <!-- Screen 1: Image Reveal -->
     <div id="screen-reveal" class="container active">
@@ -295,6 +299,7 @@
                 tile.onclick = function() {
 
                     this.classList.add('hidden');
+                    document.getElementById('sfx-reveal').play();
                     startMusic();
                 };
                 grid.appendChild(tile);
@@ -303,6 +308,7 @@
         }
 
         function goToQuestion() {
+            document.getElementById('sfx-click').play();
             const qData = questions[currentRound];
             document.getElementById('question-text').innerText = qData.q;
             
@@ -333,6 +339,7 @@
             if (element.classList.contains('falling')) return;
 
             if (selected === correct) {
+                document.getElementById('sfx-correct').play();
                 // ถูกต้อง
                 let overlay = document.getElementById('overlay-correct');
                 overlay.classList.remove('show-correct');
@@ -353,6 +360,7 @@
                     }
                 }, 3000);
             } else {
+                document.getElementById('sfx-wrong').play();
                 // ผิด
                 element.classList.add('falling');
                 let overlay = document.getElementById('overlay-wrong');
