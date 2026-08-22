@@ -187,6 +187,7 @@
             <div class="grid" id="tile-grid"></div>
         </div>
         <div>
+            <button class="btn" onclick="revealAllTiles()" style="margin-right: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white;">เฉลยภาพ</button>
             <button class="btn" onclick="goToQuestion()">ถัดไป (ไปตอบคำถาม)</button>
         </div>
     </div>
@@ -251,7 +252,7 @@
     {
         img: '4.png', 
         q: "4. จากคลิปวิดิโอ เป็นการเล่นเพลงชนิดใด และมีอัตราจังหวะกี่ชั้น",
-        video: 'URL_วิดีโอ_1.mp4', // (มึงต้องแก้ลิงก์นี้เป็นไฟล์วิดีโอของมึง)
+        video: null,
         choices: [
             "A. เพลงโหมโรง อัตราจังหวะชั้นเดียว",
             "B. เพลงเถา อัตราจังหวะสองชั้น",
@@ -263,7 +264,7 @@
     {
         img: '5.JPG', 
         q: "5. จากคลิปวิดิโอ ผู้ขับร้องคือใคร",
-        video: 'URL_วิดีโอ_2.mp4', // (มึงต้องแก้ลิงก์นี้เป็นไฟล์วิดีโอของมึง)
+        video: null,
         choices: [
             "A. อาจารย์สุรางค์ ดุริยพันธุ์",
             "B. อาจารย์พีรศิษย์ บัวทั่ง",
@@ -378,6 +379,16 @@
 
         // เริ่มเกม
         window.onload = initReveal;
+                function revealAllTiles() {
+            startMusic();
+            document.getElementById('sfx-reveal').play();
+            const tiles = document.querySelectorAll('.tile:not(.hidden)');
+            tiles.forEach((tile, index) => {
+                setTimeout(() => {
+                    tile.classList.add('falling');
+                }, index * 100); 
+            });
+        }
     </script>
 </body>
 </html>
