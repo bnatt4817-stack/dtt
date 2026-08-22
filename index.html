@@ -379,13 +379,13 @@
 
         // เริ่มเกม
         window.onload = initReveal;
-                function revealAllTiles() {
+                        function revealAllTiles() {
             startMusic();
             document.getElementById('sfx-reveal').play();
             const tiles = document.querySelectorAll('.tile:not(.hidden)');
             tiles.forEach((tile, index) => {
                 setTimeout(() => {
-                    tile.classList.add('falling');
+                    tile.classList.add('hidden');
                 }, index * 100); 
             });
         }
